@@ -3,127 +3,184 @@
 
 <head>
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#000000">
-<meta name="msapplication-navbutton-color" content="#000000">
-<meta name="apple-mobile-web-app-title" content="HTML">
-<meta name="application-name" content="HTML">
-<meta name="msapplication-TileColor" content="#000000">
-<meta name="msapplication-TileImage" content="icon.png">
-<meta name="msapplication-config" content="browserconfig.xml">
-<meta name="description" content="HTML">
-<title>HTML</title>
-<link rel='manifest' href='manifest.json'>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <meta name="msapplication-navbutton-color" content="#000000">
+  <meta name="apple-mobile-web-app-title" content="HTML">
+  <meta name="application-name" content="HTML">
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="icon.png">
+  <meta name="msapplication-config" content="browserconfig.xml">
+  <meta name="description" content="HTML">
+  <title>HTML</title>
+  <link rel='manifest' href='manifest.json'>
+  <link rel="stylesheet" href="style.css">
 
-<link rel="apple-touch-icon" sizes="180x180" href="icon.png">
-<link rel="icon" type="image/png" sizes="any" href="icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+  <link rel="icon" type="image/png" sizes="any" href="icon.png">
 
 </head>
 
 <body id="root" class="hide-code">
-<iframe id="display" srcdoc="" allowtransparency="true"></iframe>
-<textarea id="code"></textarea>
-<footer>
-  <button onclick="toggleCode()">&lt; &gt;</button>
-</footer>
+  <iframe id="display" srcdoc="" allowtransparency="true"></iframe>
+  <!-- <div id="display"></div> -->
+  <textarea id="code"></textarea>
+  <footer>
+  </footer>
 
-<style>
- * {
-    font-family: monospace;
-    word-wrap: break-word;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    color: inherit;
-    line-height: inherit;
-    transition: all 1s ease;
-  }
+  <script>
+    const body = document.getElementById('root');
+    const display = document.getElementById('display');
+    const code = document.getElementById('code');
 
-  body {
-    background: #333;
-  }
+    let count = 0;
+    let timer;
 
-  body.hide-code #code {
-    height: 0;
-    padding: 0;
-    z-index: -1;
-    visibility: hidden;
-  }
+    function registerClick() {
+      console.log('click');
+      count++;
+      clearTimeout(timer);
 
-  #code {
-    display: block;
-    width: 80%;
-    height: 80vh;
-    font-family: monospace;
-    font-size: small;
-    padding: 0.6em;
-    position: absolute;
-    bottom: 0;
-    z-index: 99;
-    margin: 1em;
-  }
+      timer = setTimeout(() => {
+        if (count === 3) {
+          console.log('Triple click!');
+          toggleCode();
+        }
+        if (count === 4) console.log('Quadruple click!');
+        count = 0; // Reset
+      }, 400); // Wait 400ms for next click
+    }
 
-  iframe {
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-  }
+    body.addEventListener('click', registerClick);
 
-  footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-  }
+    display.addEventListener('load', () => {
+      if (display.contentDocument) {
+        display.contentDocument.addEventListener('click', registerClick);
+      }
+    });
 
-  footer button {
-    position: fixed;
-    font-size: 1em;
-    bottom: 0;
-    right: 0;
-    margin: 1em;
-    padding: 0.5em;
-    z-index: 999;
-  }
-</style>
+    function toggleCode() {
+      body.classList.toggle('hide-code');
+    }
 
-<script>
-  const body = document.getElementById('root');
-  const iframe = document.getElementById('display');
-  const code = document.getElementById('code');
+    function setLocal(name, value) {
+      localStorage.setItem(name, JSON.stringify(value));
+    }
 
-  function toggleCode() {
-    body.classList.toggle('hide-code');
-  }
+    function getLocal(name) {
+      return JSON.parse(localStorage.getItem(name));
+    }
 
-  function setLocal(name,value ) {
-    localStorage.setItem(name, JSON.stringify(value));
-  }
+    code.addEventListener('input', () => {
+      setLocal('code', code.value);
+      display.srcdoc = getLocal('code');
+    });
 
-  function getLocal(name) {
-    return JSON.parse(localStorage.getItem(name));
-  }
+    window.addEventListener('load', () => {
+      code.value = getLocal('code') || '';
+      display.srcdoc = code.value;
+    });
 
-  code.addEventListener('input', () => {
-    setLocal('code', code.value);
-    iframe.srcdoc = getLocal('code');
-  });
+    // if ("serviceWorker" in navigator) {
+    //   if (navigator.serviceWorker.controller) {
+    //     console.log("[PWA Builder] active service worker found, no need to register");
+    //   } else {
+    //     navigator.serviceWorker
+    //       .register("pwabuilder-sw.js", {
+    //         scope: "./"
+    //       })
+    //       .then(function (reg) {
+    //         console.log("[PWA Builder] Service worker has been registered for scope: " + reg.scope);
+    //       });
+    //   }
+    // }
 
-  window.addEventListener('load', () => {
-    code.value = getLocal('code') || '';
-    iframe.srcdoc = code.value;
-  });
-</script>
-<script src="script.js"></script>
+    function loadHTML() {
+      var x = document.getElementById("code-text").value;
+      document.getElementById("show-output").srcdoc = x;
+    }
+  </script>
+
+
+
+  <style>
+    *,
+    *:before,
+    *:after {
+      font-family: monospace;
+      word-wrap: break-word;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      color: inherit;
+      line-height: inherit;
+      transition: all 1s ease;
+    }
+
+    .bg-dark {
+      background: #333;
+    }
+
+    .bg-black {
+      background: #000;
+    }
+
+    body {
+      background: #333;
+    }
+
+    body.hide-code #code {
+      height: 0;
+      padding: 0;
+      z-index: -1;
+      visibility: hidden;
+    }
+
+    #code {
+      display: block;
+      width: 80%;
+      height: 80vh;
+      font-family: monospace;
+      font-size: small;
+      padding: 0.6em;
+      position: absolute;
+      bottom: 0;
+      z-index: 99;
+      margin: 1em;
+    }
+
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    footer button {
+      position: fixed;
+      font-size: 1em;
+      bottom: 0;
+      right: 0;
+      margin: 1em;
+      padding: 0.5em;
+      z-index: 999;
+      opacity: 0;
+    }
+  </style>
 
 </body>
 
