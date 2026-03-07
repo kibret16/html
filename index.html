@@ -5,20 +5,19 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="transparent">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#000000">
-  <meta name="msapplication-navbutton-color" content="#000000">
+  <meta name="theme-color" content="#fff">
+  <meta name="msapplication-navbutton-color" content="#fff">
   <meta name="apple-mobile-web-app-title" content="HTML">
   <meta name="application-name" content="HTML">
-  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileColor" content="#fff">
   <meta name="msapplication-TileImage" content="icon.png">
   <meta name="msapplication-config" content="browserconfig.xml">
   <meta name="description" content="HTML">
   <title>HTML</title>
   <link rel='manifest' href='manifest.json'>
-  <link rel="stylesheet" href="style.css">
 
   <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
   <link rel="icon" type="image/png" sizes="any" href="icon.png">
@@ -46,13 +45,9 @@
       clearTimeout(timer);
 
       timer = setTimeout(() => {
-        if (count === 3) {
-          console.log('Triple click!');
-          toggleCode();
-        }
-        if (count === 4) console.log('Quadruple click!');
-        count = 0; // Reset
-      }, 400); // Wait 400ms for next click
+        if (count === 4) toggleCode();
+        count = 0;
+      }, 400);
     }
 
     body.addEventListener('click', registerClick);
@@ -129,8 +124,9 @@
       background: #000;
     }
 
+    html,
     body {
-      background: #333;
+      background: transparent;
     }
 
     body.hide-code #code {
