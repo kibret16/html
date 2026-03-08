@@ -71,14 +71,33 @@
       return JSON.parse(localStorage.getItem(name));
     }
 
+    function injectSafeAreaStyle(html) {
+      if (!html) return '';
+      const styleConfig = `<style>
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      </style>`;
+      
+      const lowerCaseHtml = html.toLowerCase();
+      if (lowerCaseHtml.includes('</head>')) {
+        return html.replace(/<\/head>/i, styleConfig + '\n</head>');
+      } else {
+        return html + '\n' + styleConfig;
+      }
+    }
+
     code.addEventListener('input', () => {
       setLocal('code', code.value);
-      display.srcdoc = getLocal('code');
+      display.srcdoc = injectSafeAreaStyle(code.value);
     });
 
     window.addEventListener('load', () => {
       code.value = getLocal('code') || '';
-      display.srcdoc = code.value;
+      display.srcdoc = injectSafeAreaStyle(code.value);
     });
 
     // if ("serviceWorker" in navigator) {
