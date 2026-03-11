@@ -12,10 +12,10 @@
   <link rel="icon" type="image/png" href="icon.png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: all 0.2s ease; }
-    html, body { overflow: hidden; background: #f0f0f5; }
+    html, body { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; overflow: hidden; background: #f0f0f5; }
     body.hide-code #editor { opacity: 0; pointer-events: none; transform: translateY(1em); }
     #display { width: 100vw; height: 100vh; border: none; display: block; background: #fff; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
-    #editor { position: absolute; bottom: 1em; left: 1em; right: 1em; height: 80vh; z-index: 999; display: flex; flex-direction: column; background: #1e1e1e; backdrop-filter: blur(1.5em); -webkit-backdrop-filter: blur(1.5em); border-radius: 0.25em; box-shadow: 0 0.5em 1.5em rgba(0, 0, 0, 0.1); border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
+    #editor { position: absolute; bottom: 1em; left: 1em; right: 1em; height: 50vh; z-index: 999; display: flex; flex-direction: column; background: #1e1e1e; backdrop-filter: blur(1.5em); -webkit-backdrop-filter: blur(1.5em); border-radius: 0.25em; box-shadow: 0 0.5em 1.5em rgba(0, 0, 0, 0.1); border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
     #toolbar { display: flex; justify-content: flex-end; gap: 0.5em; padding: 0.25em; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
     #toolbar button { background: rgba(255,255,255,0.8); color: #007aff; border: none; padding: 0.25em 1em; border-radius: 0.25em; cursor: pointer; font-size: 0.75em; font-weight: 600; box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.05); }
     #toolbar button:active { transform: scale(0.95); background: #e5e5ea; }
@@ -59,7 +59,10 @@
       const blocks = [];
       
       // Isolate script/style/pre blocks to prevent JS/CSS characters from being parsed as tags
-      html = html.replace(/(<(script|style|pre)[^>]*>)([\s\S]*?)(<\/\2>)/gi, (_, open, tag, content, close) => {
+      // Improved regex to safely handle > characters hidden inside string attributes
+      const tagAttrRegex = /(<(script|style|pre)(?:\s+(?:[^>"']|"[^"]*"|'[^']*')*)?>)([\s\S]*?)(<\/\2\s*>)/gi;
+      
+      html = html.replace(tagAttrRegex, (_, open, tag, content, close) => {
         if (tag.toLowerCase() === 'style') {
           // Format CSS to be one line per item
           content = content.replace(/\s+/g, ' ')
@@ -69,16 +72,21 @@
                            .replace(/\s*}\s*/g, ' }\n')
                            .trim();
         } else {
+          // Strictly preserve scripts/pre formatting, just trim leading/trailing empty newlines
           content = content.replace(/^\s*[\r\n]+|[\r\n]+\s*$/g, '');
         }
         blocks.push(content);
         return `${open}\n%%%BLOCK${blocks.length - 1}%%%\n${close}`;
       });
 
-      return html.replace(/>\s+</g, '><').split(/(<\/?(?:[a-z][a-z0-9:-]*)(?:\s+[^>]*)?>|<!--[\s\S]*?-->|<![^>]*>)/i).map(n => n.trim()).filter(Boolean).map(node => {
+      // Split cleanly around tags without breaking on attribute strings
+      const splitRegex = /(<\/?(?:[a-z][a-z0-9:-]*)(?:\s+(?:[^>"']|"[^"]*"|'[^']*')*)?>|<!--[\s\S]*?-->|<![^>]*>)/i;
+
+      return html.replace(/>\s+</g, '><').split(splitRegex).map(n => n.trim()).filter(Boolean).map(node => {
         let match = node.match(/^%%%BLOCK(\d+)%%%$/);
         if (match) {
-          let lines = blocks[match[1]].split('\n');
+          // Handle all possible OS line endings (\r\n, \n, \r) so lines never accidentally merge
+          let lines = blocks[match[1]].split(/\r\n|\n|\r/);
           let min = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^\s*/)[0].length));
           return lines.map(l => '  '.repeat(pad) + l.substring(!isFinite(min) ? 0 : min)).join('\n');
         }
