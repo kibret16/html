@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,99 +11,24 @@
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="icon" type="image/png" href="icon.png">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      transition: all 0.2s ease;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #f0f0f5;
-    }
-
-    body.hide-code #editor {
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(1em);
-    }
-
-    #display {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-      background: #fff;
-    }
-
-    #editor {
-      position: absolute;
-      bottom: 1em;
-      left: 1em;
-      right: 1em;
-      height: 80vh;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(1.5em);
-      -webkit-backdrop-filter: blur(1.5em);
-      border-radius: 1em;
-      box-shadow: 0 0.5em 1.5em rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-
-    #toolbar {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5em;
-      padding: 0.5em;
-      background: rgba(255, 255, 255, 0.5);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    #toolbar button {
-      background: rgba(255, 255, 255, 0.8);
-      color: #007aff;
-      border: none;
-      padding: 0.5em 1em;
-      border-radius: 0.5em;
-      cursor: pointer;
-      font-size: 0.9em;
-      font-weight: 600;
-      box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.05);
-    }
-
-    #toolbar button:active {
-      transform: scale(0.95);
-      background: #e5e5ea;
-    }
-
-    #code {
-      flex-grow: 1;
-      border: none;
-      padding: 1em;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.9em;
-      resize: none;
-      background: transparent;
-      outline: none;
-      color: #1c1c1e;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: all 0.2s ease; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #f0f0f5; }
+    body.hide-code #editor { opacity: 0; pointer-events: none; transform: translateY(1em); }
+    #display { width: 100%; height: 100%; border: none; display: block; background: #fff; }
+    #editor { position: absolute; bottom: 1em; left: 1em; right: 1em; height: 90vh; z-index: 10; display: flex; flex-direction: column; background: #1e1e1e; backdrop-filter: blur(1.5em); -webkit-backdrop-filter: blur(1.5em); border-radius: 0.25em; box-shadow: 0 0.5em 1.5em rgba(0, 0, 0, 0.1); border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
+    #toolbar { display: flex; justify-content: flex-end; gap: 0.5em; padding: 0.25em; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+    #toolbar button { background: rgba(255,255,255,0.8); color: #007aff; border: none; padding: 0.25em 1em; border-radius: 0.25em; cursor: pointer; font-size: 0.75em; font-weight: 600; box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.05); }
+    #toolbar button:active { transform: scale(0.95); background: #e5e5ea; }
+    #code { flex-grow: 1; border: none; padding: 0.5em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.75em; resize: none; background: transparent; outline: none; color: #ffc; white-space: pre; }
   </style>
 </head>
-
 <body class="hide-code">
   <iframe id="display" allowtransparency="true"></iframe>
   <div id="editor">
     <div id="toolbar">
-      <button id="btn-format" title="Format: 4 to 2 spaces">Format</button>
+      <button id="btn-clear" title="Clear the code">Clear</button>
+      <button id="btn-4to2spaces" title="4 to 2 spaces">Spaces</button>
+      <button id="btn-format" title="Format">Format</button>
       <button id="btn-close" title="Close">Close</button>
     </div>
     <textarea id="code" placeholder="Type HTML here..."></textarea>
@@ -117,7 +41,7 @@
 
     const updateDisplay = () => {
       localStorage.setItem('code', code.value);
-      display.srcdoc = `<style>body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}</style>${code.value}`;
+      display.srcdoc = `<style>body{padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}</style>${code.value}`;
     };
 
     const registerClick = () => {
@@ -129,18 +53,62 @@
       }, 400);
     };
 
-    document.getElementById('btn-close').onclick = (e) => { e.stopPropagation(); body.classList.add('hide-code'); };
-    document.getElementById('btn-format').onclick = (e) => { e.stopPropagation(); code.value = code.value.replace(/ {4}/g, '  '); updateDisplay(); };
+    const formatHTML = (html) => {
+      let pad = 0;
+      const blocks = [];
+      
+      // Isolate script/style/pre blocks to prevent JS/CSS characters from being parsed as tags
+      html = html.replace(/(<(script|style|pre)[^>]*>)([\s\S]*?)(<\/\2>)/gi, (_, open, tag, content, close) => {
+        if (tag.toLowerCase() === 'style') {
+          // Format CSS to be one line per item
+          content = content.replace(/\s+/g, ' ')
+                           .replace(/\s*{\s*/g, ' { ')
+                           .replace(/:\s*/g, ': ')
+                           .replace(/;\s*/g, '; ')
+                           .replace(/\s*}\s*/g, ' }\n')
+                           .trim();
+        } else {
+          content = content.replace(/^\s*[\r\n]+|[\r\n]+\s*$/g, '');
+        }
+        blocks.push(content);
+        return `${open}\n%%%BLOCK${blocks.length - 1}%%%\n${close}`;
+      });
 
+      return html.replace(/>\s+</g, '><').split(/(<\/?(?:[a-z][a-z0-9:-]*)(?:\s+[^>]*)?>|<!--[\s\S]*?-->|<![^>]*>)/i).map(n => n.trim()).filter(Boolean).map(node => {
+        let match = node.match(/^%%%BLOCK(\d+)%%%$/);
+        if (match) {
+          let lines = blocks[match[1]].split('\n');
+          let min = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^\s*/)[0].length));
+          return lines.map(l => '  '.repeat(pad) + l.substring(!isFinite(min) ? 0 : min)).join('\n');
+        }
+        
+        if (node.match(/^<\//)) pad = Math.max(0, pad - 1);
+        const out = '  '.repeat(pad) + node.replace(/\s+/g, ' '); // Collapses internal tag whitespace
+        
+        // Only increase pad if it's an opening tag, not a void element, and not self-closing
+        if (node.match(/^<[a-z]/i) && !node.match(/^<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)/i) && !node.match(/\/>$/)) pad++;
+        
+        return out;
+      }).join('\n');
+    };
+
+    document.getElementById('btn-clear').onclick = (e) => {
+      if (confirm('Are you sure you want to clear the code?')) {
+        e.stopPropagation(); code.value = ''; updateDisplay();
+      }
+     };
+    document.getElementById('btn-4to2spaces').onclick = (e) => { e.stopPropagation(); code.value = code.value.replace(/ {4}/g, '  '); updateDisplay(); };
+    document.getElementById('btn-format').onclick = (e) => { e.stopPropagation(); code.value = formatHTML(code.value); updateDisplay(); };
+    document.getElementById('btn-close').onclick = (e) => { e.stopPropagation(); body.classList.add('hide-code'); };
+    
     code.oninput = updateDisplay;
     body.onclick = registerClick;
     display.onload = () => display.contentDocument?.addEventListener('click', registerClick);
     window.onload = () => { code.value = localStorage.getItem('code') || ''; updateDisplay(); };
 
     if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
-      navigator.serviceWorker.register('pwabuilder-sw.js', { scope: './' }).catch(() => { });
+      navigator.serviceWorker.register('pwabuilder-sw.js', { scope: './' }).catch(() => {});
     }
   </script>
 </body>
-
 </html>
