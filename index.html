@@ -26,6 +26,7 @@
   <iframe id="display" allowtransparency="true"></iframe>
   <div id="editor">
     <div id="toolbar">
+      <button id="btn-find-replace" title="Find and replace">F & R</button>
       <button id="btn-clear" title="Clear the code">Clear</button>
       <button id="btn-4to2spaces" title="4 to 2 spaces">Spaces</button>
       <button id="btn-format" title="Format">Format</button>
@@ -97,6 +98,15 @@
         e.stopPropagation(); code.value = ''; updateDisplay();
       }
      };
+    document.getElementById('btn-find-replace').onclick = (e) => {
+      e.stopPropagation();
+      const find = prompt('Find what?');
+      const replace = prompt('Replace with?');
+      if (find && replace) {
+        code.value = code.value.replace(new RegExp(find, 'g'), replace);
+        updateDisplay();
+      }
+    };
     document.getElementById('btn-4to2spaces').onclick = (e) => { e.stopPropagation(); code.value = code.value.replace(/ {4}/g, '  '); updateDisplay(); };
     document.getElementById('btn-format').onclick = (e) => { e.stopPropagation(); code.value = formatHTML(code.value); updateDisplay(); };
     document.getElementById('btn-close').onclick = (e) => { e.stopPropagation(); body.classList.add('hide-code'); };
