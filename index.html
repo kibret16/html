@@ -12,9 +12,9 @@
   <link rel="icon" type="image/png" href="icon.png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: all 0.2s ease; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #f0f0f5; }
+    html, body { overflow: hidden; background: #f0f0f5; }
     body.hide-code #editor { opacity: 0; pointer-events: none; transform: translateY(1em); }
-    #display { width: 100%; height: 100%; border: none; display: block; background: #fff; }
+    #display { width: 100vw; height: 100vh; border: none; display: block; background: #fff; }
     #editor { position: absolute; bottom: 1em; left: 1em; right: 1em; height: 80vh; z-index: 10; display: flex; flex-direction: column; background: #1e1e1e; backdrop-filter: blur(1.5em); -webkit-backdrop-filter: blur(1.5em); border-radius: 0.25em; box-shadow: 0 0.5em 1.5em rgba(0, 0, 0, 0.1); border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
     #toolbar { display: flex; justify-content: flex-end; gap: 0.5em; padding: 0.25em; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
     #toolbar button { background: rgba(255,255,255,0.8); color: #007aff; border: none; padding: 0.25em 1em; border-radius: 0.25em; cursor: pointer; font-size: 0.75em; font-weight: 600; box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.05); }
@@ -41,7 +41,7 @@
 
     const updateDisplay = () => {
       localStorage.setItem('code', code.value);
-      display.srcdoc = `<style>body{padding-top: env(safe-area-inset-top);}</style>${code.value}`;
+      display.srcdoc = `<style>body{padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}</style>${code.value}`;
     };
 
     const registerClick = () => {
